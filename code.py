@@ -1,19 +1,20 @@
 #importing all libraries
 import pandas as pd
 import io
+import getpass
 import requests
 import datetime
 from bs4 import BeautifulSoup
 import smtplib
 
 # Finding special index
-def get_url():
+def get_url():# A function for generating url for fetching data.
     current_time = datetime.datetime.now()
     s='https://www1.nseindia.com/content/indices/ind_close_all_'
     if current_time.day < 10:
         s=s+'0'+str(current_time.day)
     else:
-        s=s+str(current_time.day)
+        s=s+str(current_time.day-1)
     if current_time.month < 10:
         s=s+'0'+str(current_time.month)
     else:
@@ -22,11 +23,24 @@ def get_url():
     return s
 
 
-email = ['a1@gmail.com','b1@gmail.com','c1@gmail.com','d1@gmail.com','e1@gmail.com'] #email ids
+email = ['1805037@kiit.ac.in','1805092@kiit.ac.in','1805109@kiit.ac.in','1805157@kiit.ac.in','1805142@kiit.ac.in','1805095@kiit.ac.in']
+email.append('1805096@kiit.ac.in')
+email.append('1805099@kiit.ac.in')
+email.append('1805258@kiit.ac.in')
+email.append('surajgupta6205@gmail.com')
+email.append('ayushstar28@gmail.com')
+email.append('yash6334@gmail.com')
+email.append('singhrishita24@gmail.com')
+email.append('ajay.anandfcs@kiit.ac.in')
 
-url=get_url()
-s=requests.get(url).content
-df=pd.read_csv(io.StringIO(s.decode('utf-8')))
+#All mail id is stored in email named list.
+
+url=get_url()# getting URL
+s=requests.get(url).content  #getting content present in URL
+df=pd.read_csv(io.StringIO(s.decode('utf-8')))   #converting content into dataframe
+
+#Doing some operation on data
+
 df1=df[df['Change(%)']>df['Change(%)'][0]]
 df2=df[df['Change(%)']<df['Change(%)'][0]]
 
@@ -38,9 +52,9 @@ d2=list(df2.head()['Index Name'].values)#top loosers index
 
 
 server = smtplib.SMTP("smtp.gmail.com", 587)
-server.starttls()
-server.login("Your_mail_id","your_mail_pass")
-
+server.starttls()  #Starting server
+server.login("adarsh.nwd@gmail.com",getpass.getpass('Enter Password :'))    #Entering mail id and password for login
+# getpass method will help in taking password masked text.
 
 
 s1='TOP BULLISH INDEX:-\n'
@@ -55,11 +69,10 @@ for i in d2:
     count=count+1
 
 
-for x in email:
-    subject = "NSE-INDEX MOVEMENT"
-    body="subject:{}\n\n{}".format(subject,s1)
-    server.sendmail("adarsh.nwd@gmail.com",x,body)
-    print(str(x)+"  Done")
+subject = "NSE-INDEX MOVEMENT"  #subject of mail.
+body="subject:{}\n\n{}".format(subject,s1) # Creating body for the mail
+server.sendmail("adarsh.nwd@gmail.com",email,body)  # Mailing.
+
 
 print("NSE-INDEX MOVEMENT DONE")
 # ->    ->     ->     ->     ->     ->     ->     ->     ->     ->     ->     ->     ->
@@ -91,11 +104,10 @@ for i in ite:
     s1=s1+"Contribution = "+str(d2['Contribution'][i])+'\n\n'
     count = count + 1
 
-for x in email:
-    subject = "STOCKS DRAGGING NIFTY(NIFTY-50)"
-    body="subject:{}\n\n{}".format(subject,s1)
-    server.sendmail("adarsh.nwd@gmail.com",x,body)
-    print(str(x)+"  Done")
+subject = "STOCKS DRAGGING NIFTY(NIFTY-50)"
+body="subject:{}\n\n{}".format(subject,s1)
+server.sendmail("adarsh.nwd@gmail.com",email,body)
+
 
 print("STOCKS DRAGGING NIFTY DONE")
 
@@ -134,11 +146,10 @@ for i in ite:
     s1=s1+"% change = "+str(loosers['%Chg'][i])+'\n\n'
     count = count + 1
     
-for x in email:
-    subject = "GAINERS AND LOOSERS(NIFTY-200)"
-    body="subject:{}\n\n{}".format(subject,s1)
-    server.sendmail("adarsh.nwd@gmail.com",x,body)
-    print(str(x)+"  Done")
+
+subject = "GAINERS AND LOOSERS(NIFTY-200)"
+body="subject:{}\n\n{}".format(subject,s1)
+server.sendmail("adarsh.nwd@gmail.com",email,body)
     
-print("GAINERS ABD LOOSERS IN NIFTY 200 DONE")
+print("GAINERS AND LOOSERS IN NIFTY 200 DONE")
 server.quit()
